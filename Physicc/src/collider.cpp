@@ -59,23 +59,8 @@ namespace Physicc
 		: Collider(position, rotation, scale)
 	{
 	}
-
-	{
-		using namespace BoxCollider;
-		s_vertices = std::vector<glm::vec4>(8, glm::vec4(0, 0, 0, 1.0f)); //Static class member
-
-		//Top-face vertices
-		s_vertices[0] = glm::vec4(glm::vec3(0.5f), 1.0f);
-		s_vertices[1] = s_vertices[0] - glm::vec4(1, 0, 0, 0);
-		s_vertices[2] = s_vertices[0] - glm::vec4(0, 1, 0, 0);
-		s_vertices[3] = s_vertices[0] - glm::vec4(1, 1, 0, 0);
-
-		//Bottom-face vertices
-		s_vertices[4] = glm::vec4(glm::vec3(-0.5f), 1.0f);
-		s_vertices[5] = s_vertices[0] + glm::vec4(1, 0, 0, 0);
-		s_vertices[6] = s_vertices[0] + glm::vec4(0, 1, 0, 0);
-		s_vertices[7] = s_vertices[0] + glm::vec4(1, 1, 0, 0);
-	}
+	
+	BoxCollider::initVertices();
 
 	/**
 	 * @brief Computes and returns Axis Aligned Bounding Box of Box shaped object
@@ -96,7 +81,7 @@ namespace Physicc
 
 		for (int i = 0; i < 8; i++) //To be replaced by matrix multiplication
 		{
-			glm::vec3 temp = m_transform * standard_vertices[i]; 
+			glm::vec3 temp = m_transform * standard_vertices[i]; // Two 4x4 matrices
 			lowerBound = glm::min(lowerBound, temp); //Takes component-wise min
 			upperBound = glm::max(upperBound, temp);
 		}

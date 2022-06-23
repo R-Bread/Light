@@ -177,6 +177,23 @@ namespace Physicc
 			return Type::Box;
 		}
 
+		static void initVertices()
+		{
+			s_vertices = std::vector<glm::vec4>(8, glm::vec4(0, 0, 0, 1.0f)); //Static class member
+
+			//Top-face vertices
+			s_vertices[0] = glm::vec4(glm::vec3(0.5f), 1.0f);
+			s_vertices[1] = s_vertices[0] - glm::vec4(1, 0, 0, 0);
+			s_vertices[2] = s_vertices[0] - glm::vec4(0, 1, 0, 0);
+			s_vertices[3] = s_vertices[0] - glm::vec4(1, 1, 0, 0);
+
+			//Bottom-face vertices
+			s_vertices[4] = glm::vec4(glm::vec3(-0.5f), 1.0f);
+			s_vertices[5] = s_vertices[0] + glm::vec4(1, 0, 0, 0);
+			s_vertices[6] = s_vertices[0] + glm::vec4(0, 1, 0, 0);
+			s_vertices[7] = s_vertices[0] + glm::vec4(1, 1, 0, 0);
+		}
+
 		inline static std::vector<glm::vec4> getVertices()
 		{
 			ZoneScoped;
