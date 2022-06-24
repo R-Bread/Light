@@ -110,7 +110,14 @@ namespace Physicc
 	{
 		ZoneScoped;
 		
-		return glm::inverse(m_transform)*glm::vec4(point, 1);
+		return glm::vec3(glm::inverse(m_transform)*glm::vec4(point, 1));
+	}
+
+	glm::vec3 BoxCollider::toWorldCoordinates(glm::vec3 point)
+	{
+		ZoneScoped;
+		
+		return glm::vec3(m_transform*glm::vec4(point, 1));
 	}
 
 	/**

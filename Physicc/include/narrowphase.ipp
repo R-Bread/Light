@@ -1,3 +1,6 @@
+#include "narrowphase.hpp"
+#include <cmath>
+
 template <>
 Contact checkCollision<Sphere, Sphere>(Broadphase::PotentialContact a)
 {
@@ -11,8 +14,8 @@ Contact checkCollision<Sphere, Sphere>(Broadphase::PotentialContact a)
 	float radius1 = sphere1.getCollider()->getRadius();
 	float radius2 = sphere2.getCollider()->getRadius();
 
-	glm::vec3 centreLine = centre1 - centre2;
-	float centreLineLength = centreLine.magnitude();
+	glm::vec3 centreLine = centre1 - centre2; // Convention is for normal to point from body2 to body1
+	float centreLineLength = glm::length(centreLine);
 
 	if (centreLineLength <= radius1 + radius2)
 	{	
@@ -21,7 +24,7 @@ Contact checkCollision<Sphere, Sphere>(Broadphase::PotentialContact a)
 						(centre1+centre2)/2, // contact point
 						centreLine/centreLineLength, // contact normal
 						radius1 + radius2 - centreLineLength // penetration
-						);
+		);
 	}
 
 
@@ -39,10 +42,11 @@ Contact checkCollision<Box, Sphere>(Broadphase::PotentialContact a)
 	auto sphere = a.rb2;
 
 	glm::vec3 sphereCentre = sphere.getCentroid();
+	float radius  = sphere.getCollider()->getRadius();
 	
 	glm::vec3 relativeSphereCentre = box.getCollider()->toBoxCoordinates(sphereCentre);
 
-	glm::vec3 closestPt; // 
+	glm::vec3 closestPt;
 	
 	// Clamp the transformed coordinates by half-edges of the box
 	float dist = relativeSphereCentre.x;
@@ -60,16 +64,34 @@ Contact checkCollision<Box, Sphere>(Broadphase::PotentialContact a)
 	if (dist < -0.5) dist = -0.5;
 	closestPt.z = dist;
 	
-	// Check to see if we’re in contact.
-	dist = (closestPt - relativeSphereCentre).squareMagnitude();
-	return (dist > sphere.radius * sphere.radius);
+	closestPt = box.getCollider()->toWorldCoordinates(closestPt);
 
+	glm::vec3 contactNormal = closestPt - sphereCentre; // Convention is for normal to point from body2 to body1
+	
+	float normalLength = glm::length(contactNormal);
+
+	if (normalLength <= radius) 
+	{
+		return Contact(rb1,
+					   rb2,
+					   closestPt,
+					   contactNormal/normalLength,
+					   radius - normalLength
+		);
+	}
 }
 
 template <>
 Contact checkCollision<Sphere, Box>(Broadphase::PotentialContact a)
-{
-	return checkCollision<Box, Sphere>(Broadphase::PotentialContact(a.second, a.first));
+{	
+	Contact boxSphereContact =  checkCollision<Box, Sphere>(Broadphase::PotentialContact(a.second, a.first));
+	// Exchange bodies and flip the contact normal
+	return Contact(boxSphereContact.Body2,
+				   boxSphereContact.Body1, 
+				   boxSphereContact.contactPoint,
+				   -boxSphereContact.contactNormal,
+				   boxSphereContact.penetration
+	);
 }
 
 template <>

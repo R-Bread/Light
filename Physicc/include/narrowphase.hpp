@@ -29,7 +29,7 @@ namespace Physicc::Narrowphase
 		std::weak_ptr<RigidBody> Body1;
 		std::weak_ptr<RigidBody> Body2;
 		glm::vec3 contactPoint;
-		glm::vec3 contactNormal;
+		glm::vec3 contactNormal; // Convention is for normal to point from body2 to body1
 		double penetration;
 		// Friction has been removed as it is a property of rigid body and not of Contact
 	};
