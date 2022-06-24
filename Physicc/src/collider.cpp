@@ -77,17 +77,28 @@ namespace Physicc
 		glm::vec3 lowerBound(0.5f);
 		glm::vec3 upperBound(-0.5f);
 
-		std::vector<glm::vec4> standard_vertices = getVertices();
+		std::vector<glm::vec4> standardVertices = getVertices();
 
-		for (int i = 0; i < 8; i++) //To be replaced by matrix multiplication
+		std::vector<glm::mat4> faceVertices(2);
+		glm::mat4 temp;
+
+		for (int i = 0; i < 2; i++)
 		{
-			glm::vec3 temp = m_transform * standard_vertices[i]; // Two 4x4 matrices
-			lowerBound = glm::min(lowerBound, temp); //Takes component-wise min
-			upperBound = glm::max(upperBound, temp);
+			faceVertices[i] = glm::mat4(standardVertices[4*i],
+										standardVertices[4*i+1],
+										standardVertices[4*i+2],
+										standardVertices[4*i+3]) // Columns are vertice vectors
+			
+			temp = m_transform * faceVertices[i];
+
+			for (int j = 0; j<4; j++){
+				lowerBound = glm::min(lowerBound, glm::column(temp, j)); //Takes component-wise min
+				upperBound = glm::max(upperBound, glm::column(temp, j));
+			}
 		}
 
 		return {lowerBound, upperBound};
-		//returning initializer list instead of an actual object
+		// Returns initializer list instead of an actual object
 	}
 
 	glm::vec3 BoxCollider::getCentroid() const
