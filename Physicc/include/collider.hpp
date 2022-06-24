@@ -223,6 +223,11 @@ namespace Physicc
 			return m_position;
 		}
 
+		[[nodiscard]] inline glm::vec3 getRadius() const override
+		{
+			return m_radius;
+		}
+
 		inline Type getType() const override
 		{
 			return Type::Sphere;
