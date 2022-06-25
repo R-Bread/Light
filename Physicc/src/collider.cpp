@@ -106,18 +106,25 @@ namespace Physicc
 		return m_position;
 	}
 
-	glm::vec3 BoxCollider::toBoxCoordinates(glm::vec3 point)
+	glm::vec3 BoxCollider::toBoxCoordinates(const glm::vec3& point) const
 	{
 		ZoneScoped;
 		
 		return glm::vec3(glm::inverse(m_transform)*glm::vec4(point, 1));
 	}
 
-	glm::vec3 BoxCollider::toWorldCoordinates(glm::vec3 point)
+	glm::vec3 BoxCollider::toWorldCoordinates(const glm::vec3& point) const
 	{
 		ZoneScoped;
 		
 		return glm::vec3(m_transform*glm::vec4(point, 1));
+	}
+
+	glm::vec3 BoxCollider::toBoxCoordinates(glm::vec3 point) const
+	{
+		ZoneScoped;
+		
+		return glm::inverse(m_transform)*glm::vec4(point, 1);
 	}
 
 	/**
