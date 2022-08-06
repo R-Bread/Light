@@ -29,11 +29,12 @@ namespace Physicc::Narrowphase
 		std::weak_ptr<RigidBody> Body1;
 		std::weak_ptr<RigidBody> Body2;
 		glm::vec3 contactPoint;
-		glm::vec3 contactNormal; // Convention is for normal to point from body2 to body1
+		glm::vec3 contactNormal;
 		double penetration;
 		// Friction has been removed as it is a property of rigid body and not of Contact
 	};
 
+	template <typename... CollisionTypes>
 	class collisionFunctionMatrix; // forward declaration of the struct
 
 	class CollisionDetector
@@ -66,11 +67,13 @@ namespace Physicc::Narrowphase
 		collisionFunctionMatrix m;
 	};
 
+	/**
 	template <typename FirstBody, typename SecondBody>
 	Contact checkCollision(Broadphase::PotentialContact a) {
 		LIGHT_ASSERT(true, "Collision checking for the given types is not supported yet. \
 						   Please file a bug report if you can reproduce this issue.")
 	}
+	*/
 
 	// This file includes specific overloads of the above function.
 	#include "narrowphase.ipp"
@@ -80,7 +83,7 @@ namespace Physicc::Narrowphase
 	template <typename... CollisionTypes>
 	class collisionFunctionMatrix {
 		public:
-			typedef bool (*collisionFuncSignature)();
+			typedef bool (*collisionFuncSignature)(); // TODO: Update function signature.
 
 			collisionFunctionMatrix() {
 				// When an object of this struct is instatiated, we will construct the
