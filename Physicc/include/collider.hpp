@@ -177,21 +177,23 @@ namespace Physicc
 			return Type::Box;
 		}
 
-		static void initVertices()
+		static std::vector<glm::vec4> initVertices()
 		{
-			s_vertices = std::vector<glm::vec4>(8, glm::vec4(0, 0, 0, 1.0f)); //Static class member
+			std::vector<glm::vec4> tempVertices = std::vector<glm::vec4>(8, glm::vec4(0, 0, 0, 1.0f)); //Static class member
 
 			//Top-face vertices
-			s_vertices[0] = glm::vec4(glm::vec3(0.5f), 1.0f);
-			s_vertices[1] = s_vertices[0] - glm::vec4(1, 0, 0, 0);
-			s_vertices[2] = s_vertices[0] - glm::vec4(0, 1, 0, 0);
-			s_vertices[3] = s_vertices[0] - glm::vec4(1, 1, 0, 0);
+			tempVertices[0] = glm::vec4(glm::vec3(0.5f), 1.0f);
+			tempVertices[1] = tempVertices[0] - glm::vec4(1, 0, 0, 0);
+			tempVertices[2] = tempVertices[0] - glm::vec4(0, 1, 0, 0);
+			tempVertices[3] = tempVertices[0] - glm::vec4(1, 1, 0, 0);
 
 			//Bottom-face vertices
-			s_vertices[4] = glm::vec4(glm::vec3(-0.5f), 1.0f);
-			s_vertices[5] = s_vertices[0] + glm::vec4(1, 0, 0, 0);
-			s_vertices[6] = s_vertices[0] + glm::vec4(0, 1, 0, 0);
-			s_vertices[7] = s_vertices[0] + glm::vec4(1, 1, 0, 0);
+			tempVertices[4] = glm::vec4(glm::vec3(-0.5f), 1.0f);
+			tempVertices[5] = tempVertices[0] + glm::vec4(1, 0, 0, 0);
+			tempVertices[6] = tempVertices[0] + glm::vec4(0, 1, 0, 0);
+			tempVertices[7] = tempVertices[0] + glm::vec4(1, 1, 0, 0);
+			
+			return tempVertices;
 		}
 
 		inline static std::vector<glm::vec4> getVertices()
@@ -203,6 +205,8 @@ namespace Physicc
 		glm::vec3 toBoxCoordinates(const glm::vec3& point) const; 
 
 		glm::vec3 toWorldCoordinates(const glm::vec3& point) const; 
+
+		glm::vec3 makeAxis(const glm::vec3& point) const;
 
 	private:
 		static std::vector<glm::vec4> s_vertices;
@@ -228,7 +232,7 @@ namespace Physicc
 			return m_position;
 		}
 
-		[[nodiscard]] inline glm::vec3 getRadius() const override
+		[[nodiscard]] inline float getRadius() const
 		{
 			return m_radius;
 		}

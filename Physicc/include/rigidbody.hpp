@@ -63,6 +63,11 @@ namespace Physicc
 				m_collider = collider;
 			}
 
+			inline std::shared_ptr<Collider> getCollider() const
+			{
+				return m_collider;
+			}
+
 		private:
 			glm::vec3 m_force;
 			std::shared_ptr<Collider> m_collider;

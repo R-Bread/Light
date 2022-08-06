@@ -17,6 +17,8 @@
 
 #include "collider.hpp"
 
+#include "glm/gtc/matrix_access.hpp"
+
 namespace Physicc
 {
 	Collider::Collider(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
@@ -60,7 +62,7 @@ namespace Physicc
 	{
 	}
 	
-	BoxCollider::initVertices();
+	std::vector<glm::vec4> BoxCollider::s_vertices = BoxCollider::initVertices();
 
 	/**
 	 * @brief Computes and returns Axis Aligned Bounding Box of Box shaped object
@@ -87,23 +89,18 @@ namespace Physicc
 			faceVertices[i] = glm::mat4(standardVertices[4*i],
 										standardVertices[4*i+1],
 										standardVertices[4*i+2],
-										standardVertices[4*i+3]) // Columns are vertice vectors
+										standardVertices[4*i+3]); // Columns are vertice vectors
 			
 			temp = m_transform * faceVertices[i];
 
 			for (int j = 0; j<4; j++){
-				lowerBound = glm::min(lowerBound, glm::column(temp, j)); //Takes component-wise min
-				upperBound = glm::max(upperBound, glm::column(temp, j));
+				lowerBound = glm::min(lowerBound, glm::vec3(temp[j])); //Takes component-wise min
+				upperBound = glm::max(upperBound, glm::vec3(temp[j]));
 			}
 		}
 
 		return {lowerBound, upperBound};
 		// Returns initializer list instead of an actual object
-	}
-
-	glm::vec3 BoxCollider::getCentroid() const
-	{
-		return m_position;
 	}
 
 	glm::vec3 BoxCollider::toBoxCoordinates(const glm::vec3& point) const
@@ -120,11 +117,11 @@ namespace Physicc
 		return glm::vec3(m_transform*glm::vec4(point, 1));
 	}
 
-	glm::vec3 BoxCollider::toBoxCoordinates(glm::vec3 point) const
+	glm::vec3 BoxCollider::makeAxis(const glm::vec3& point) const
 	{
 		ZoneScoped;
 		
-		return glm::inverse(m_transform)*glm::vec4(point, 1);
+		return glm::vec3(m_transform*glm::vec4(point, 0));
 	}
 
 	/**

@@ -63,7 +63,7 @@ namespace Physicc::Narrowphase
 		std::vector<Broadphase::PotentialContact> collisionArray;
 		std::vector<Narrowphase::Contact> collisionInfo;
 		// the above should return a complete list of contact info for every collision
-		std::vector<std::pair<RigidBody, RigidBody>>> collision;
+		std::vector<std::pair<RigidBody, RigidBody>> collision;
 		collisionFunctionMatrix m;
 	};
 
