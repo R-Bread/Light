@@ -106,7 +106,7 @@ namespace Physicc::Broadphase
 		return v;
 	}
 
-	std::vector<PotentialContact> getPotentialContacts(BVH bvh){
+	std::vector<PotentialContact> getPotentialContacts(BVH& bvh){
 		return getPotentialContacts(bvh.getHeadNode().get());
 	}
 }
