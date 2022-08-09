@@ -76,7 +76,7 @@ namespace Physicc
 	BVH::Axis BVH::getMedianCuttingAxis(std::size_t start, std::size_t end)
 	{
 		//TODO: Suggest a better name
-    
+
 		glm::vec3 min(m_rigidBodyList[start].getCentroid()),
 			max(m_rigidBodyList[start].getCentroid());
 
@@ -120,7 +120,7 @@ namespace Physicc
 			//then the only element left in this sliced vector is the one at
 			//`start`
 			node->volume = m_rigidBodyList[start].getAABB();
-			node->body = std::make_shared<RigidBody>(m_rigidBodyList[start]);
+			node->body = m_rigidBodyList[start];
 		} else
 		{
 			node->volume = computeBV(start, end);
@@ -141,14 +141,13 @@ namespace Physicc
 		}
 	}
 
-	std::vector<std::weak_ptr<RigidBody>> BVH::convert()
+	std::vector<RigidBody*> BVH::convert()
 	{
 		std::stack<BVHNode*> s;
-		std::vector<std::weak_ptr<RigidBody>> tree;
+		std::vector<RigidBody*> tree;
 		BVHNode* currentNode = m_head.get();
 		while (!s.empty() || currentNode != nullptr)
 		{
-
 			while (currentNode != nullptr)
 			{
 				s.push(currentNode);

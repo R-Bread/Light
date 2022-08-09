@@ -10,7 +10,7 @@ namespace Physicc
 	struct BVHNode
 	{
 		BoundingVolume::AABB volume;
-		std::weak_ptr<RigidBody> body;
+		RigidBody* body;
 
 		std::shared_ptr<BVHNode> parent;
 		std::shared_ptr<BVHNode> left;
@@ -34,9 +34,11 @@ namespace Physicc
 			//build a binary tree of the bounding volumes
 
 			//convert the tree into a linear data structure
-			std::vector<std::weak_ptr<RigidBody>> convert();
+			std::vector<RigidBody*> convert();
+			// TODO: Figure out if we want an array of rigidbody pointers or
+			// BVHNode pointers
 
-			std::shared_ptr<BVHNode> getHeadNode(){
+			std::shared_ptr<BVHNode> getHeadNode() {
 				return m_head;
 			}
 
