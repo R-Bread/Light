@@ -120,7 +120,7 @@ namespace Physicc
 			//then the only element left in this sliced vector is the one at
 			//`start`
 			node->volume = m_rigidBodyList[start].getAABB();
-			node->body = m_rigidBodyList[start];
+			node->body = &m_rigidBodyList[start];
 		} else
 		{
 			node->volume = computeBV(start, end);
