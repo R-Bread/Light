@@ -1,9 +1,9 @@
 #include "narrowphase.hpp"
 
 using namespace Physicc::Narrowphase;
-float CollisionDetector::penetrationAlongAxis(BoxCollider* bc1,
-                                                     BoxCollider* bc2,
-                                                     const glm::vec3 axis)
+float NarrowphaseImpl::penetrationAlongAxis(BoxCollider* bc1,
+                                            BoxCollider* bc2,
+                                            const glm::vec3 axis)
 {
     // The axis should be normalised, always
     float centreDistance = abs(glm::dot(axis, bc1->getCentroid() - bc2->getCentroid()));

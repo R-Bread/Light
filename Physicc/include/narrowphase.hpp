@@ -20,6 +20,12 @@
 
 namespace Physicc::Narrowphase
 {
+	namespace NarrowphaseImpl {
+		float penetrationAlongAxis(BoxCollider* bc1,
+								   BoxCollider* bc2,
+								   const glm::vec3 axis);
+	}
+
 	struct Contact
 	{
 		Contact(RigidBody* rb1, RigidBody* rb2, glm::vec3 cP, glm::vec3 cN, double p) 
@@ -63,29 +69,23 @@ namespace Physicc::Narrowphase
 
 		// Move individual components to individual function
 
-		bool generateContacts()
+		void generateContacts()
 		{
 			// Take in the entire array of potential contacts and then
 			// traverse through every single one, and dispatch it to the
 			// correct narrow phase collision detecting function.
-			return true;
-			// Temporary return value to sate the compiler
 		}
 
 		std::vector<Contact> getContacts()
 		{
 		}
 
-		float penetrationAlongAxis(BoxCollider* bc1,
-								   BoxCollider* bc2,
-								   const glm::vec3 axis);
-
 		private:
 		std::vector<Broadphase::PotentialContact> collisionArray;
 		std::vector<Contact> collisionInfo;
 		// the above should return a complete list of contact info for every collision
 		std::vector<std::pair<RigidBody, RigidBody>> collision;
-		collisionFunctionMatrix<SphereCollider> m; // Changed for debugging only
+		collisionFunctionMatrix<SphereCollider, BoxCollider> m;
 	};
 }
 
