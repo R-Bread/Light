@@ -35,9 +35,24 @@ namespace Physicc::Narrowphase
 		// Friction has been removed as it is a property of rigid body and not of Contact
 	};
 
-	template <typename... CollisionTypes>
-	class collisionFunctionMatrix; // forward declaration of the struct
+	template <typename FirstBody, typename SecondBody>
+	Contact checkCollision(Broadphase::PotentialContact a);
+	/**
+		LIGHT_ASSERT(true, "Collision checking for the given types is not supported yet. \
+						   Please file a bug report if you can reproduce this issue.")
+	}
+	*/
 
+	// This file includes specific overloads of the above function.
+	#include "narrowphase.ipp"
+
+	// This file includes the definition of the collision function matrix class. It cannot
+	// be a standalone header file because it needs to be able to see all the template
+	// specializations of the checkCollision function to be able to work its magic.
+	#include "collisionFunctionMatrix.ipp"
+
+	// The CollisionDetector class definition must come after the collisioFunctionMatrix.ipp and
+	// narrowphase.ipp because the compiler needs a full definition of everything in order to work.
 	class CollisionDetector
 	{
 		public:
@@ -71,75 +86,6 @@ namespace Physicc::Narrowphase
 		// the above should return a complete list of contact info for every collision
 		std::vector<std::pair<RigidBody, RigidBody>> collision;
 		collisionFunctionMatrix<SphereCollider> m; // Changed for debugging only
-	};
-
-	template <typename FirstBody, typename SecondBody>
-	Contact checkCollision(Broadphase::PotentialContact a);
-	/**
-		LIGHT_ASSERT(true, "Collision checking for the given types is not supported yet. \
-						   Please file a bug report if you can reproduce this issue.")
-	}
-	*/
-
-	// This file includes specific overloads of the above function.
-	#include "narrowphase.ipp"
-
-	// The collisionFunctionMatrix is defined here because it needs to be able to see the full
-	// definitions of all the functions before it can do its thing
-	template <typename... CollisionTypes>
-	class collisionFunctionMatrix {
-		public:
-			// change this typedef as required
-			typedef Contact (*collisionFuncSignature)(Broadphase::PotentialContact);
-
-			collisionFunctionMatrix() {
-				// When an object of this struct is instatiated, we will construct the
-				// matrix.
-				constructMatrix<0, 0, CollisionTypes...>();
-			}
-
-			std::array<std::array<collisionFuncSignature, sizeof...(CollisionTypes)>,
-					   sizeof...(CollisionTypes)>
-				matrix;
-
-			std::array<collisionFuncSignature, sizeof...(CollisionTypes)>& operator[](std::size_t idx) {
-					return matrix[idx];
-			}
-
-	   private:
-		  template <typename std::size_t row, std::size_t col, typename Head, typename... Rest>
-		  void constructMatrix() {
-			  matrix[row][col] = convert<Head, Head>();
-  
-			  if constexpr (sizeof...(Rest) > 0) {
-							  constructRow<row, col + 1, Head, Rest...>();
-							  constructCol<row + 1, col, Head, Rest...>();
-				  constructMatrix<row + 1, col + 1, Rest...>();
-			  }
-		  }
-  
-		  template <std::size_t row, std::size_t col, typename Head, typename Next,
-				    typename... Rest>
-		  void constructRow() {
-			  matrix[row][col] = convert<Head, Next>();
-			  if constexpr (sizeof...(Rest) > 0) {
-				  constructRow<row, col + 1, Head, Rest...>();
-			  }
-		  }
-  
-		  template <std::size_t row, std::size_t col, typename Head, typename Next,
-				    typename... Rest>
-		  void constructCol() {
-			  matrix[row][col] = convert<Next, Head>();
-			  if constexpr (sizeof...(Rest) > 0) {
-				  constructCol<row + 1, col, Head, Rest...>();
-			  }
-		  }
-
-		  template <typename Type1, typename Type2>
-		  collisionFuncSignature convert() {
-		      return &checkCollision<Type1, Type2>;
-		  }
 	};
 }
 
