@@ -53,6 +53,8 @@ namespace Physicc::Narrowphase
 			// Take in the entire array of potential contacts and then
 			// traverse through every single one, and dispatch it to the
 			// correct narrow phase collision detecting function.
+			return true;
+			// Temporary return value to sate the compiler
 		}
 
 		std::vector<Contact> getContacts()
@@ -105,9 +107,9 @@ namespace Physicc::Narrowphase
 			}
 
 	   private:
-		  template <typename std::size_t row, std::size_t col, typename... CollisionTypes>
+		  template <typename std::size_t row, std::size_t col, typename Head, typename... Rest>
 		  void constructMatrix() {
-			  matrix[row][col] = convert<Head, Head>;
+			  matrix[row][col] = convert<Head, Head>();
   
 			  if constexpr (sizeof...(Rest) > 0) {
 							  constructRow<row, col + 1, Head, Rest...>();
@@ -119,7 +121,7 @@ namespace Physicc::Narrowphase
 		  template <std::size_t row, std::size_t col, typename Head, typename Next,
 				    typename... Rest>
 		  void constructRow() {
-			  matrix[row][col] = convert<Head, Next>;
+			  matrix[row][col] = convert<Head, Next>();
 			  if constexpr (sizeof...(Rest) > 0) {
 				  constructRow<row, col + 1, Head, Rest...>();
 			  }
@@ -128,10 +130,15 @@ namespace Physicc::Narrowphase
 		  template <std::size_t row, std::size_t col, typename Head, typename Next,
 				    typename... Rest>
 		  void constructCol() {
-			  matrix[row][col] = convert<Next, Head>;
+			  matrix[row][col] = convert<Next, Head>();
 			  if constexpr (sizeof...(Rest) > 0) {
 				  constructCol<row + 1, col, Head, Rest...>();
 			  }
+		  }
+
+		  template <typename Type1, typename Type2>
+		  collisionFuncSignature convert() {
+		      return &checkCollision<Type1, Type2>;
 		  }
 	};
 }
