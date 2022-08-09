@@ -59,6 +59,10 @@ namespace Physicc::Narrowphase
 		{
 		}
 
+		float penetrationAlongAxis(BoxCollider* bc1,
+								   BoxCollider* bc2,
+								   const glm::vec3 axis);
+
 		private:
 		std::vector<Broadphase::PotentialContact> collisionArray;
 		std::vector<Contact> collisionInfo;
