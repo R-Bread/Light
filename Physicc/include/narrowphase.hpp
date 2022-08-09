@@ -9,6 +9,7 @@
 #include <vector>
 #include <array>
 #include <cstddef> // for std::size_t
+#include <memory>
 
 /**
  * TODO: Write BoxSphere and BoxBox functions, make it so that the functions return all the
@@ -63,7 +64,7 @@ namespace Physicc::Narrowphase
 		std::vector<Contact> collisionInfo;
 		// the above should return a complete list of contact info for every collision
 		std::vector<std::pair<RigidBody, RigidBody>> collision;
-		collisionFunctionMatrix<SphereCollider, BoxCollider> m;
+		collisionFunctionMatrix<SphereCollider> m; // Changed for debugging only
 	};
 
 	template <typename FirstBody, typename SecondBody>
