@@ -17,7 +17,8 @@ namespace Physicc::Broadphase
 		: rb1(body1), rb2(body2)
 		{
 		}
-		RigidBody* rb1, rb2;
+		RigidBody* rb1;
+		RigidBody* rb2;
 	};
 
 	std::vector<PotentialContact> getPotentialContacts(BVHNode* node);
