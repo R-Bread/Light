@@ -1,5 +1,3 @@
-// The collisionFunctionMatrix is defined here because it needs to be able to see the full
-// definitions of all the functions before it can do its thing
 template <typename... CollisionTypes>
 class collisionFunctionMatrix {
 	public:
@@ -48,5 +46,10 @@ class collisionFunctionMatrix {
 		  if constexpr (sizeof...(Rest) > 0) {
 			  constructCol<row + 1, col, Head, Rest...>();
 		  }
+	  }
+
+	  template <typename Type1, typename Type2>
+	  collisionFuncSignature convert() {
+		  return checkCollision<Type1, Type2>;
 	  }
 };
