@@ -100,6 +100,7 @@ namespace Physicc::Narrowphase
 			}
 
 	   private:
+		  template <typename std::size_t row, std::size_t col, typename... CollisionTypes>
 		  void constructMatrix() {
 			  matrix[row][col] = convert<Head, Head>;
   
