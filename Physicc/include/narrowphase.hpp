@@ -43,11 +43,6 @@ namespace Physicc::Narrowphase
 
 	template <typename FirstBody, typename SecondBody>
 	Contact checkCollision(Broadphase::PotentialContact a);
-	/**
-		LIGHT_ASSERT(true, "Collision checking for the given types is not supported yet. \
-						   Please file a bug report if you can reproduce this issue.")
-	}
-	*/
 
 	// This file includes specific overloads of the above function.
 	#include "narrowphase.ipp"
@@ -78,13 +73,12 @@ namespace Physicc::Narrowphase
 
 		std::vector<Contact> getContacts()
 		{
+			return collisionInfo;
 		}
 
 		private:
 		std::vector<Broadphase::PotentialContact> collisionArray;
 		std::vector<Contact> collisionInfo;
-		// the above should return a complete list of contact info for every collision
-		std::vector<std::pair<RigidBody, RigidBody>> collision;
 		collisionFunctionMatrix<SphereCollider, BoxCollider> m;
 	};
 }
