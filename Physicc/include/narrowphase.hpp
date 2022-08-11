@@ -10,12 +10,13 @@
 #include <array>
 #include <cstddef> // for std::size_t
 #include <memory>
+#include <optional>
 
 /**
  * TODO: Write BoxSphere and BoxBox functions, make it so that the functions return all the
  * information required for contact resolution.
  *
- * Fix formatting issues, and reorganize the functions in the collisionFunctionMatrix struct.
+ * Fix formatting issues.
  */
 
 namespace Physicc::Narrowphase
@@ -42,15 +43,76 @@ namespace Physicc::Narrowphase
 	};
 
 	template <typename FirstBody, typename SecondBody>
-	Contact checkCollision(Broadphase::PotentialContact a);
+	std::optional<Contact> checkCollision(Broadphase::PotentialContact);
 
-	// This file includes specific overloads of the above function.
-	#include "narrowphase.ipp"
+	// These are the template specializations of the above function declaration that we currently support
+	template <>
+	std::optional<Contact> checkCollision<SphereCollider, SphereCollider>(Broadphase::PotentialContact);
 
-	// This file includes the definition of the collision function matrix class. It cannot
-	// be a standalone header file because it needs to be able to see all the template
-	// specializations of the checkCollision function to be able to work its magic.
-	#include "collisionFunctionMatrix.ipp"
+	template <>
+	std::optional<Contact> checkCollision<BoxCollider, SphereCollider>(Broadphase::PotentialContact);
+
+	template <>
+	std::optional<Contact> checkCollision<SphereCollider, BoxCollider>(Broadphase::PotentialContact);
+
+	template <>
+	std::optional<Contact> checkCollision<BoxCollider, BoxCollider>(Broadphase::PotentialContact);
+
+	template <typename... CollisionTypes>
+	class collisionFunctionMatrix {
+		public:
+			// change this typedef as required
+			typedef std::optional<Contact> (*collisionFuncSignature)(Broadphase::PotentialContact);
+
+			collisionFunctionMatrix() {
+				// When an object of this struct is instatiated, we will construct the
+				// matrix.
+				constructMatrix<0, 0, CollisionTypes...>();
+			}
+
+			std::array<std::array<collisionFuncSignature, sizeof...(CollisionTypes)>,
+					   sizeof...(CollisionTypes)>
+				matrix;
+
+			std::array<collisionFuncSignature, sizeof...(CollisionTypes)>& operator[](std::size_t idx) {
+					return matrix[idx];
+			}
+
+	   private:
+		  template <typename std::size_t row, std::size_t col, typename Head, typename... Rest>
+		  void constructMatrix() {
+			  matrix[row][col] = convert<Head, Head>();
+
+			  if constexpr (sizeof...(Rest) > 0) {
+							  constructRow<row, col + 1, Head, Rest...>();
+							  constructCol<row + 1, col, Head, Rest...>();
+				  constructMatrix<row + 1, col + 1, Rest...>();
+			  }
+		  }
+
+		  template <std::size_t row, std::size_t col, typename Head, typename Next,
+					typename... Rest>
+		  void constructRow() {
+			  matrix[row][col] = convert<Head, Next>();
+			  if constexpr (sizeof...(Rest) > 0) {
+				  constructRow<row, col + 1, Head, Rest...>();
+			  }
+		  }
+
+		  template <std::size_t row, std::size_t col, typename Head, typename Next,
+					typename... Rest>
+		  void constructCol() {
+			  matrix[row][col] = convert<Next, Head>();
+			  if constexpr (sizeof...(Rest) > 0) {
+				  constructCol<row + 1, col, Head, Rest...>();
+			  }
+		  }
+
+		  template <typename Type1, typename Type2>
+		  collisionFuncSignature convert() {
+			  return checkCollision<Type1, Type2>;
+		  }
+	};
 
 	// The CollisionDetector class definition must come after the collisioFunctionMatrix.ipp and
 	// narrowphase.ipp because the compiler needs a full definition of everything in order to work.
